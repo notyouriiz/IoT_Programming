@@ -1,0 +1,16 @@
+Developing a simple smarthome with LED Control by Website. Using thingspeak as a cloud to integrate the internet and LED Control with Wemos D1 R1 Mini, using an API request by Thingspeak
+
+Tools:
+  1. Wemos D1 R1 mini Built In WiFi
+  2. LED 3 pcs
+  3. LDR Sensor
+  4. Male to Female Cable (6 cables)
+  5. Male to Male (3 pcs)
+  6. A house prototype
+  7. Thinsgpeak Account and Channel
+
+Libraries:
+  1. Thingspeak.h
+    For connecting to thingspeak, it is required a "channel_id" and "writeAPIKey"
+  2. ESP8266Wifi.h
+    For connecting to wifi, it is required wifi "SSID" and "Password"
