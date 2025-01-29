@@ -1,5 +1,10 @@
 # Smart Home LED Lamp Control with Wemos D1 R2 and ThingSpeak
-<a href="https://www.canva.com/design/DAGdk55q7o0/uCX7wEmshadQvhYo04mWQQ/edit?utm_content=DAGdk55q7o0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"><img src="Asset/Preview.png" alt="Preview Images" ></a><br>
+<div style="text-align: center;">
+    <a href="https://www.canva.com/design/DAGdk55q7o0/uCX7wEmshadQvhYo04mWQQ/edit?utm_content=DAGdk55q7o0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton">
+        <img src="Asset/Preview.png" alt="Preview Images">
+    </a>
+</div>
+<br>
 <a href="https://www.instagram.com/reel/C9PvcAsSmw-/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==">Click Here for Preview Video. </a>
 This project demonstrates how to control LED lamps using a Wemos D1 R2 microcontroller integrated with ThingSpeak for data recording and control. The system also utilizes a Light Dependent Resistor (LDR) sensor to automate the lamp's on/off functionality based on ambient light levels.
 
