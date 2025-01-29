@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Control and Monitoring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FBF6E2; /* Lightest color */
+            color: #131842; /* Darkest color */
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff; /* White background */
+            color: #131842; /* Darkest color */
+            padding: 10px 20px;
+        }
+        .header img {
+            max-height: 50px;
+            margin-right: 10px;
+        }
+        .header h1{
+            align-items: left;
+        }
+        h1, h2, h3 {
+            color: #E68369; /* Accent color */
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .led-control, .chart {
+            box-sizing: border-box;
+            padding: 20px;
+            margin: 10px;
+            background-color: #ECCEAE; /* Light color */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: calc(33.33% - 20px);
+        }
+        .chart {
+            width: 100%;
+        }
+        .chart iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+        }
+        .time-range {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .analysis-results {
+            width: 100%;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #ECCEAE; /* Light color */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .time-range label, .analysis-results p {
+            color: #131842; /* Darkest color */
+        }
+        input[type="number"], button {
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #E68369; /* Accent color */
+            color: #FBF6E2; /* Lightest color */
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #131842; /* Darker accent color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <img src="Asset/Logo SCU.png" alt="Logo SCU">
+        </div>
+        <div>
+            <h1>LED Control and Monitoring</h1>
+        </div>
+        <div>
+            <img src="Asset/logo TI.png" alt="Logo TI">
+        </div>
+    </div>
+    <h3>Welcome to the LED Control and Monitoring System. This web page allows you to control and monitor the status of multiple LEDs and observe charts reflecting the behavior of the LEDs and the Light Dependent Resistor (LDR) sensor</h3>
+
+    <h1>LED Control</h1>
+    <div class="container">
+        <div class="led-control">
+            <h2>LED 1</h2>
+            <button onclick="controlLED('1', 1)">Turn On</button>
+            <button onclick="controlLED('1', 0)">Turn Off</button>
+        </div>
+        <div class="led-control">
+            <h2>LED 2</h2>
+            <button onclick="controlLED('2', 1)">Turn On</button>
+            <button onclick="controlLED('2', 0)">Turn Off</button>
+        </div>
+        <div class="led-control">
+            <h2>LED 3</h2>
+            <button onclick="controlLED('3', 1)">Turn On</button>
+            <button onclick="controlLED('3', 0)">Turn Off</button>
+        </div>
+    </div>
+
+    <h1>LED and LDR Charts</h1>
+    <div class="time-range">
+        <label for="timeRange">Select Time Range (Hours Ago):</label>
+        <input type="number" id="timeRange" value="10">
+        <button onclick="updateCharts()">Update Charts</button>
+    </div>
+    <div class="container">
+        <div class="chart">
+            <h2>Light Variation from LDR Sensor</h2>
+            <iframe id="ldrSensorChart"></iframe>
+        </div>
+        <div class="chart">
+            <h2>Correlation between LDR Sensor and LED 4</h2>
+            <iframe src="https://thingspeak.com/apps/matlab_visualizations/573011?height=auto&width=auto"></iframe>
+        </div>
+        <div class="chart">
+            <h2>Comparison between LDR Sensor value and LED 4 condition</h2>
+            <iframe src="https://thingspeak.com/apps/matlab_visualizations/572879?height=auto&width=auto"></iframe>
+        </div>
+        <div class="chart">
+            <h2>LED 1 Chart</h2>
+            <iframe id="led1Chart"></iframe>
+        </div>
+        <div class="chart">
+            <h2>LED 2 Chart</h2>
+            <iframe id="led2Chart"></iframe>
+        </div>
+        <div class="chart">
+            <h2>LED 3 Chart</h2>
+            <iframe id="led3Chart"></iframe>
+        </div>
+        <div class="chart">
+            <h2>LED 4 Chart</h2>
+            <iframe id="led4Chart"></iframe>
+        </div>
+        <div class="chart">
+            <h2>LDR Sensor Chart</h2>
+            <iframe src="https://thingspeak.com/apps/matlab_visualizations/572870?height=auto&width=auto"></iframe>
+        </div>
+    </div>
+    <div class="analysis-results" id="analysisResults"></div>
+
+    <script>
+        function controlLED(ledNumber, state) {
+            const apiKey = '7I3H88NBPA8JW95O';
+            const url = `https://api.thingspeak.com/update?api_key=${apiKey}&field${ledNumber}=${state}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateCharts() {
+            const timeRange = document.getElementById('timeRange').value;
+            const results = timeRange * 60; // Number of minutes
+            const update = 15; // Update interval in seconds
+
+            document.getElementById('ldrSensorChart').src = `https://thingspeak.com/channels/2581299/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=${results}&type=line&update=${update}`;
+            document.getElementById('led1Chart').src = `https://thingspeak.com/channels/2581299/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=${results}&type=line&update=${update}`;
+            document.getElementById('led2Chart').src = `https://thingspeak.com/channels/2581299/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=${results}&type=line&update=${update}`;
+            document.getElementById('led3Chart').src = `https://thingspeak.com/channels/2581299/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=${results}&type=line&update=${update}`;
+            document.getElementById('led4Chart').src = `https://thingspeak.com/channels/2581299/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=${results}&type=line&update=${update}`;
+
+            fetchAnalysisResults(results);
+        }
+
+        function fetchAnalysisResults(results) {
+            const apiKey = 'YE1O5VHLLHK2EN2U';
+            const channelId = '2581299';
+
+            Promise.all([
+                fetch(`https://api.thingspeak.com/channels/${channelId}/fields/1.json?api_key=${apiKey}&results=${results}`),
+                fetch(`https://api.thingspeak.com/channels/${channelId}/fields/2.json?api_key=${apiKey}&results=${results}`),
+                fetch(`https://api.thingspeak.com/channels/${channelId}/fields/3.json?api_key=${apiKey}&results=${results}`),
+                fetch(`https://api.thingspeak.com/channels/${channelId}/fields/4.json?api_key=${apiKey}&results=${results}`),
+                fetch(`https://api.thingspeak.com/channels/${channelId}/fields/5.json?api_key=${apiKey}&results=${results}`)
+            ])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(dataArray => {
+                const analysisResults = document.getElementById('analysisResults');
+                analysisResults.innerHTML = '';
+
+                dataArray.forEach((data, index) => {
+                    if (data.feeds.length > 0) {
+                        const values = data.feeds.map(feed => parseFloat(feed[`field${index + 1}`])).filter(value => !isNaN(value));
+                        const sum = values.reduce((a, b) => a + b, 0);
+                        const average = sum / values.length;
+                        const mode = calculateMode(values);
+
+                        const fieldLabel = ['LED 1', 'LED 2', 'LED 3', 'LED 4', 'LDR Sensor'][index];
+                        analysisResults.innerHTML += `<p><strong>${fieldLabel}</strong>: Sum = ${sum}, Average = ${average.toFixed(2)}, Mode = ${mode}</p>`;
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function calculateMode(values) {
+            const frequency = {};
+            values.forEach(value => {
+                frequency[value] = (frequency[value] || 0) + 1;
+            });
+
+            let mode = values[0];
+            let maxCount = 0;
+
+            for (const [key, count] of Object.entries(frequency)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    mode = key;
+                }
+            }
+
+            return mode;
+        }
+    </script>
+</body>
+</html>
